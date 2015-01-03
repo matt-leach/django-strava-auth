@@ -1,33 +1,59 @@
 from django.conf import settings
-from django.contrib.auth import login, authenticate as dj_authenticate
-from django.http import HttpResponse
+from django.contrib.auth import login, authenticate as strava_authenticate
+from django import http
 from django.shortcuts import redirect
+from django.views.generic import RedirectView
 
 
+class StravaRedirect(RedirectView):
+    """
+        Redirects to the Strava oauth page
+    """
+    def get_redirect_url(self, approval_prompt="force", scope="write", *args, **kwargs):
+        from django.conf import settings
+        
+        strava_url = "https://app.strava.com/oauth/authorize"
+        vars = ""
+        vars += "client_id=%s" % settings.CLIENT_ID
+        vars += "&response_type=%s" % "code"
+        vars += "&redirect_uri=%s" % settings.STRAVA_REDIRECT
+        vars += "&approval_prompt=%s" % approval_prompt
+        vars += "&scope=%s" % scope
+                
+        return "%s?%s" % (strava_url, vars)
 
 
-def authenticate(request, redirect_name):
+class StravaAuth(RedirectView):
     
-    code = request.GET.get("code", None)
+    def get(self, request, *args, **kwargs):
+        code = request.GET.get("code", None)
+        
+        print "strava auth redirect view"
+        
+        if code:
+            # Log the user in
+            user = strava_authenticate(code=code)
+            login(request, user)
+            url = self.get_redirect_url(code=code, *args, **kwargs)
+        else:
+            # Redirect to the strava url
+            view = StravaRedirect.as_view()
+            return view(request, *args, **kwargs)
+        
+        if url:
+            if self.permanent:
+                return http.HttpResponsePermanentRedirect(url)
+            else:
+                return http.HttpResponseRedirect(url)
+        else:
+            logger.warning('Gone: %s', request.path,
+                        extra={
+                            'status_code': 410,
+                            'request': request
+                        })
+            return http.HttpResponseGone()
     
-    if not code:
-        return strava_redirect(request)
-    else:
-        user = dj_authenticate(code=code)
-        login(request, user)
-        return redirect(redirect_name)
-
-  
-
-def strava_redirect(request, scope="write", approval_prompt="force"):
-    # redirect to strava authorize url  
-    strava_url = "https://app.strava.com/oauth/authorize"
     
-    vars = ""
-    vars += "client_id=%s" % settings.CLIENT_ID
-    vars += "&response_type=%s" % "code"
-    vars += "&redirect_uri=%s" % settings.STRAVA_REDIRECT
-    vars += "&approval_prompt=%s" % approval_prompt
-    vars += "&scope=%s" % scope
     
-    return redirect("%s?%s" % (strava_url, vars))
+    
+    
