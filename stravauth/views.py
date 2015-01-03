@@ -2,10 +2,10 @@ from django.conf import settings
 from django.contrib.auth import login, authenticate as strava_authenticate
 from django import http
 from django.shortcuts import redirect
-from django.views.generic import RedirectView
+from django.views import generic
 
 
-class StravaRedirect(RedirectView):
+class StravaRedirect(generic.RedirectView):
     """
         Redirects to the Strava oauth page
     """
@@ -25,35 +25,23 @@ class StravaRedirect(RedirectView):
         return "%s?%s" % (strava_url, vars)
 
 
-class StravaAuth(RedirectView):
+class StravaAuth(generic.View):
+    url = None # Or default?
     
-    def get(self, request, *args, **kwargs):
-        
+    def get(self, request, *args, **kwargs):        
         code = request.GET.get("code", None)
                 
-        if code:
-            # Log the user in
-            user = strava_authenticate(code=code)
-            login(request, user)
-            url = self.get_redirect_url(code=code, *args, **kwargs)
-        else:
+        if not code:
             # Redirect to the strava url
             view = StravaRedirect.as_view()
             return view(request, *args, **kwargs)
         
-        if url:
-            if self.permanent:
-                return http.HttpResponsePermanentRedirect(url)
-            else:
-                return http.HttpResponseRedirect(url)
-        else:
-            logger.warning('Gone: %s', request.path,
-                        extra={
-                            'status_code': 410,
-                            'request': request
-                        })
-            return http.HttpResponseGone()
-    
+        # Log the user in
+        user = strava_authenticate(code=code)
+        login(request, user)
+                    
+        return http.HttpResponseRedirect(self.url)
+        
     
     
     

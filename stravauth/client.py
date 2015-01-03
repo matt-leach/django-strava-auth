@@ -12,7 +12,7 @@ class StravaClient(object):
         data = {"client_id": client_id, "client_secret": client_secret, "code": code}
         
         r = requests.post("%s/oauth/token" % self.api_endpoint, data=data)
-        
+                
         # TODO: Error handling 
         response = r.json()
         
