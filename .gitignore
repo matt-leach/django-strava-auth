@@ -7,3 +7,4 @@ example/*
 *.pyc
 .project
 .pydevproject
+stravauth_settings.py
