@@ -1,12 +1,12 @@
 from django.conf import settings
-from django.contrib.auth import authenticate as dj_authenticate
+from django.contrib.auth import login, authenticate as dj_authenticate
 from django.http import HttpResponse
 from django.shortcuts import redirect
 
 
 
 
-def authenticate(request):
+def authenticate(request, redirect_name):
     
     code = request.GET.get("code", None)
     
@@ -14,9 +14,10 @@ def authenticate(request):
         return strava_redirect(request)
     else:
         user = dj_authenticate(code=code)
-        # authenticate
-        return HttpResponse("authenticated %s, token %s" % (user.username, user.stravatoken.token))
-    
+        login(request, user)
+        return redirect(redirect_name)
+
+  
 
 def strava_redirect(request, scope="write", approval_prompt="force"):
     # redirect to strava authorize url  
