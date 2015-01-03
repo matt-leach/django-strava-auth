@@ -2,9 +2,9 @@ bin/*
 include/*
 lib/*
 local/*
-example/*
 *~
 *.pyc
 .project
 .pydevproject
 stravauth_settings.py
+db.sqlite3
