@@ -7,7 +7,6 @@ class StravaClient(object):
     """
     api_endpoint = "https://www.strava.com"
     
-    
     def get_token(self, client_id, client_secret, code):
         data = {"client_id": client_id, "client_secret": client_secret, "code": code}
         
