@@ -15,6 +15,7 @@ class TestStravauthUtils(TestCase):
         url = get_stravauth_url()
         url, vars = self.decompose_url(url)
         self.assertEqual(url, "https://app.strava.com/oauth/authorize")
+        
         self.assertEqual(len(vars), 5)
         self.assertEqual(vars["client_id"], str(settings.CLIENT_ID))
         self.assertEqual(vars["response_type"], "code")
