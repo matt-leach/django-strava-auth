@@ -23,7 +23,10 @@ class StravaV3Backend(object):
         username = "%s: %s %s" % (user_id, response["athlete"]["firstname"], response["athlete"]["lastname"])
         
         # Get or create the user (returns tuple)
-        user = User.objects.get_or_create(id=user_id)[0]
+        try:
+            user = User.objects.get(id=user_id)
+        except:
+            user = User(id=user_id)
         
         # Update username
         user.username = username
