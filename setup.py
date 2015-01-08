@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from distutils.core import setup, find_packages
+from distutils.core import setup
 
 setup(
     name='django-strava-auth',
@@ -8,7 +8,7 @@ setup(
     long_description="""Strava V3 API Authorization""",
     author='Matthew Leach',
     url='https://github.com/matt-leach/django-strava-auth',
-    packages=find_packages(exclude=['example']),
+    packages=['stravauth'],
     zip_safe=False,
     include_package_data=True,
     classifiers=[
