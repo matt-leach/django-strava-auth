@@ -18,22 +18,22 @@ class StravaV3Backend(object):
         
         access_token = response["access_token"]
         user_id = response["athlete"]["id"]
-        username = "%s %s" % (response["athlete"]["firstname"], response["athlete"]["lastname"])
         
-        # Get or create the user
+        # username must be unique hence use id
+        username = "%s: %s %s" % (user_id, response["athlete"]["firstname"], response["athlete"]["lastname"])
+        
+        # Get or create the user (returns tuple)
         try:
             user = User.objects.get(id=user_id)
-        except User.DoesNotExist:
-            # Otherwise create the user
-            user = User(id=user_id, username=username)
-            user.save()  
+        except:
+            user = User(id=user_id)
+        
+        # Update username
+        user.username = username
+        user.save()  
         
         # Add the token 
-        try:
-            token_model = user.stravatoken
-        except StravaToken.DoesNotExist:
-            token_model = StravaToken(user=user)
-            
+        token_model = StravaToken.objects.get_or_create(user=user)            
         token_model.token = access_token
         token_model.save()
         

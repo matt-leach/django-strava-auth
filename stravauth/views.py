@@ -2,58 +2,36 @@ from django.conf import settings
 from django.contrib.auth import login, authenticate as strava_authenticate
 from django import http
 from django.shortcuts import redirect
-from django.views.generic import RedirectView
+from django.views import generic
 
 
-class StravaRedirect(RedirectView):
+class StravaRedirect(generic.RedirectView):
     """
         Redirects to the Strava oauth page
     """
     def get_redirect_url(self, approval_prompt="auto", scope="write", *args, **kwargs):
-        from django.conf import settings
+        from stravauth.utils import get_stravauth_url
         
-        # TODO: check scope and approval_prompt are reasonable 
-        
-        strava_url = "https://app.strava.com/oauth/authorize"
-        vars = ""
-        vars += "client_id=%s" % settings.CLIENT_ID
-        vars += "&response_type=%s" % "code"
-        vars += "&redirect_uri=%s" % settings.STRAVA_REDIRECT
-        vars += "&approval_prompt=%s" % approval_prompt
-        vars += "&scope=%s" % scope
-                
-        return "%s?%s" % (strava_url, vars)
+        return get_stravauth_url(approval_prompt, scope)
 
 
-class StravaAuth(RedirectView):
+class StravaAuth(generic.View):
+    url = None # Or default?
     
-    def get(self, request, *args, **kwargs):
-        
+    def get(self, request, *args, **kwargs):        
         code = request.GET.get("code", None)
                 
-        if code:
-            # Log the user in
-            user = strava_authenticate(code=code)
-            login(request, user)
-            url = self.get_redirect_url(code=code, *args, **kwargs)
-        else:
+        if not code:
             # Redirect to the strava url
             view = StravaRedirect.as_view()
             return view(request, *args, **kwargs)
         
-        if url:
-            if self.permanent:
-                return http.HttpResponsePermanentRedirect(url)
-            else:
-                return http.HttpResponseRedirect(url)
-        else:
-            logger.warning('Gone: %s', request.path,
-                        extra={
-                            'status_code': 410,
-                            'request': request
-                        })
-            return http.HttpResponseGone()
-    
+        # Log the user in
+        user = strava_authenticate(code=code)
+        login(request, user)
+                    
+        return http.HttpResponseRedirect(self.url)
+        
     
     
     

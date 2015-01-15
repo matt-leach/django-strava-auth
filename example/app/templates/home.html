@@ -1,0 +1,20 @@
+<html>
+<head>
+	{% load stravauth_tags %}
+</head>
+<body>
+	{% if user.id %}
+		<p>You are logged in as {{ user.username }}. 
+		Click <a href="{% url 'logout' %}">here</a> to Logout.</p>
+	{% endif %}
+	
+	<a href="{% url 'login' %}">Login</a>
+	
+	<br>
+	
+	<a href="{% stravauth_url %}">Connect to Strava</a>
+	
+</body>
+
+
+</html>

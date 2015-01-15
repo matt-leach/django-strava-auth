@@ -40,6 +40,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'stravauth',
+    'app',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -52,7 +53,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-ROOT_URLCONF = 'example.urls'
+ROOT_URLCONF = 'app.urls'
 
 WSGI_APPLICATION = 'example.wsgi.application'
 
