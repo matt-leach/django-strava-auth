@@ -12,7 +12,7 @@ branches:
 
 install:
     - pip install django==$DJANGO_VERSION
-    - pip install mock
+    - pip install requests
 
 script:
     - cd $EXAMPLE_PROJECT
