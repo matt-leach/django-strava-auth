@@ -94,6 +94,6 @@ CLIENT_SECRET = None
 STRAVA_REDIRECT = "http://localhost:8000/login/"
 try:
     from stravauth_settings import CLIENT_ID, CLIENT_SECRET
-except:
-    raise ImportError("No strava auth settings file")
+except ImportError:
+    pass
 
