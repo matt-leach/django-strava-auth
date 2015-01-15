@@ -1,0 +1,18 @@
+language: python
+
+python:
+    - "2.7"
+
+env:
+    - DJANGO_VERSION=1.7 EXAMPLE_PROJECT=example
+
+branches:
+    only:
+        - master
+
+install:
+    - pip install django==$DJANGO_VERSION
+
+script:
+    - cd $EXAMPLE_PROJECT
+    - python manage.py test
