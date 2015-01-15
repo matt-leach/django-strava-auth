@@ -12,7 +12,8 @@ branches:
 
 install:
     - pip install django==$DJANGO_VERSION
+    - pip install mock
 
 script:
     - cd $EXAMPLE_PROJECT
-    - python manage.py test
+    - python manage.py test stravauth

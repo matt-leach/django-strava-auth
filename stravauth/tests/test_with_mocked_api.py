@@ -18,7 +18,7 @@ class TestStravaAuthenticationWithMockedAPI(TestCase):
         Mock get_token method
         """
         if code == "alice code": 
-            return {"access_token": "alice token", "athlete": {"id": 1, "first_name": "alice"}}
+            return {"access_token": "alice token", "athlete": {"id": 1, "firstname": "alice", "lastname": ""}}
         else: 
             raise Exception()
         
@@ -34,7 +34,7 @@ class TestStravaAuthenticationWithMockedAPI(TestCase):
         self.assertEqual(user_created, u)
         
         # Check the user has the properties we expect 
-        self.assertEqual(u.username, "alice ")
+        self.assertEqual(u.username, "1: alice ")
         self.assertEqual(u.password, "")
         self.assertEqual(u.is_superuser, False)
         
@@ -46,9 +46,10 @@ class TestStravaAuthenticationWithMockedAPI(TestCase):
         # Create the user we'll reference    
         self.assertEqual(len(User.objects.all()), 0)
         u = User.objects.create(id=1, username="user 1")
-                     
+        
+        # Get the authenticated user
         user_got = authenticate(code="alice code")
-             
+        
         # Check the user has the token
         self.assertEqual(user_got.stravatoken.token, "alice token")
              
@@ -64,8 +65,8 @@ class TestStravaAuthenticationWithMockedAPI(TestCase):
         
         # Create the token
         token = StravaToken.objects.create(token="token before", user=u)
-        u = User.objects.create(id=1, username="user 1") 
-    
+        
+        # Now autheneticate the user
         user_got = authenticate(code="alice code")
              
         # Check the user has the uupdated token

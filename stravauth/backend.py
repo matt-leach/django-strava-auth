@@ -14,8 +14,11 @@ class StravaV3Backend(object):
         
         # Make the request to the API
         c = StravaClient()
-        response = c.get_token(client_id, client_secret, code)
-        
+        try:
+            response = c.get_token(client_id, client_secret, code)
+        except: # TODO: specific exception
+            return None
+                
         access_token = response["access_token"]
         user_id = response["athlete"]["id"]
         
@@ -33,7 +36,7 @@ class StravaV3Backend(object):
         user.save()  
         
         # Add the token 
-        token_model = StravaToken.objects.get_or_create(user=user)            
+        (token_model, created) = StravaToken.objects.get_or_create(user=user)            
         token_model.token = access_token
         token_model.save()
         
