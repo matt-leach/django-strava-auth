@@ -1,6 +1,8 @@
 django-strava-auth
 ==================
 
+[![Build Status](https://travis-ci.org/matt-leach/django-strava-auth.svg?branch=master)](https://travis-ci.org/matt-leach/django-strava-auth)
+
 Module designed to add authentication using the Strava V3 API.
 
 Usage
